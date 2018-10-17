@@ -27,4 +27,4 @@ include_directories ("${CMAKE_SOURCE_DIR}/Dependencies/JobBot/source")
 add_executable(ResourceTestExe
   
 )
-target_link_libraries()
+target_link_libraries(${CMAKE_SOURCE_DIR}/Dependencies/JobBot/bin/JobBot.lib)
