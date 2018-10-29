@@ -1,4 +1,4 @@
-# DownpourEngine
+# Downpour Engine
 Experimental cross-platform game engine framework focused on dynamic asset streaming
 
 [![Build Status](https://travis-ci.org/jacobmcleman/DownpourEngine.svg?branch=master)](https://travis-ci.org/jacobmcleman/DownpourEngine)
