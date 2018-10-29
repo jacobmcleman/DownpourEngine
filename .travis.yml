@@ -1,0 +1,24 @@
+language: c++
+sudo: false
+
+addons:
+  apt:
+    packages:
+      - valgrind
+      - g++-6
+    sources: &sources
+      - ubuntu-toolchain-r-test
+
+matrix:
+  include:
+    ##########################################################################
+    # Build with the main configuration on all the supported compilers
+    #
+    # Note that we only use the memory checker on the main configuration to
+    # speed up Travis builds.
+    ##########################################################################.
+    # Clang 3.9
+    - os: linux
+      env: UNIT_TESTS=true LLVM_VERSION=3.9.0 BOOST_VERSION=default ENABLE_MEMCHECK=true
+      compiler: clang
+      script: cmake -H. -Bbuild && cmake --build build && bash run_tests.sh
