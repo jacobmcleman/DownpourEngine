@@ -5,3 +5,6 @@ rm -r -f googletest-* || true
 rm -r -f build || true
 rm -r -f gmock* || true
 rm -r -f gtest* || true
+rm *.vcxproj || true
+rm *.vcxproj.filters || true
+rm *.sln || true

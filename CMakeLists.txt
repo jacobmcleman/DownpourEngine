@@ -5,7 +5,7 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
-set(CMAKE_CXX_FLAGS "-Wall -Wextra")
+set(CMAKE_CXX_FLAGS "--Wall --Werror")
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O2")
 
@@ -25,6 +25,5 @@ include_directories("${PROJECT_SOURCE_DIR}")
 include_directories ("${CMAKE_SOURCE_DIR}/Dependencies/JobBot/source")
 
 add_executable(ResourceTestExe
-  
+  src/ResourceTestMain.cpp
 )
-target_link_libraries(${CMAKE_SOURCE_DIR}/Dependencies/JobBot/bin/JobBot.lib)
