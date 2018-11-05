@@ -49,7 +49,7 @@ namespace Downpour
 
     public:
       Resource(const Identifier& aID) :
-        IsLoaded(this), LoadFailed(false),
+        IsLoaded(this), LoadFailed(this),
         ID(this),
         identifier_(aID)
       {
