@@ -4,7 +4,7 @@ namespace Downpour
   template<
     typename T, 
     class OwnerClass, 
-    const T&(OwnerClass::* AccessorFunc)() const, 
+    T(OwnerClass::* AccessorFunc)() const, 
     void (OwnerClass::* MutatorFunc)(const T&)>
   class Property
   {
@@ -21,7 +21,7 @@ namespace Downpour
   template<
     typename T, 
     class OwnerClass, 
-    const T&(OwnerClass::* AccessorFunc)() const>
+    T(OwnerClass::* AccessorFunc)() const>
   class ReadOnlyProperty
   {
     public:

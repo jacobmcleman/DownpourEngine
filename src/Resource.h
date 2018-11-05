@@ -22,29 +22,45 @@ namespace Downpour
       virtual bool LoadInternal(std::vector<byte>&& aBytes) = 0;
       virtual bool UnloadInternal() = 0;
 
-      const Identifier& GetIdentifier() const
+      /*
+        Get the identifier that was used to request this resource
+      */
+      Identifier GetIdentifier() const
       {
         return identifier_;
       }
 
-      const bool& GetIsLoaded() const
+      /*
+        Get if a successful load operation happened
+      */      
+      bool GetIsLoaded() const
       {
-        static bool toRet = hasLoaded_;
-        return toRet;
+        return hasLoaded_;
+      }
+
+      /*
+        Get if the most recent load operation failed
+        Will be false until it has actually tried to load for the first time
+      */
+      bool HasLoadFailed() const
+      {
+        return loadFailed_;
       }
 
     public:
       Resource(const Identifier& aID) :
-        IsLoaded(this),
+        IsLoaded(this), LoadFailed(this),
         ID(this),
         identifier_(aID)
       {
         hasLoaded_ = false;
+        loadFailed_ = false;
       }
 
       void Load(std::vector<byte>&& aBytes)
       {
         hasLoaded_ = this->LoadInternal(std::move(aBytes));
+        loadFailed_ = !hasLoaded_;
       }
 
       void Unload()
@@ -53,10 +69,12 @@ namespace Downpour
       }
 
       ReadOnlyProperty<bool, Resource, &Resource::GetIsLoaded> IsLoaded;
+      ReadOnlyProperty<bool, Resource, &Resource::HasLoadFailed> LoadFailed;
       ReadOnlyProperty<Identifier, Resource, &Resource::GetIdentifier> ID; 
 
     private:
       std::atomic_bool hasLoaded_;
+      std::atomic_bool loadFailed_;
       const Identifier identifier_;
   };
 }
