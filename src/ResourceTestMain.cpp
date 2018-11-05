@@ -16,6 +16,8 @@ class TestResource : public Resource<std::string>
   protected:
     bool LoadInternal(std::vector<byte>&& aBytes) override
     {
+      if(aBytes.empty()) return false;
+
       std::cout << GetIdentifier() << ": ";
       for(byte b : aBytes)
       {
@@ -34,9 +36,14 @@ class TestResource : public Resource<std::string>
 
 int main(int argc, char** argv)
 {
-  TestResource tr("test");
+  TestResource tr1("test1");
+  TestResource tr2("test2");
 
   std::string toReq = "butts lol";
   std::vector<byte> bytes(toReq.begin(), toReq.end());
-  tr.Load(std::move(bytes));
+  tr1.Load(std::move(bytes));
+  tr1.Unload();
+
+  tr2.Load(std::vector<byte>());
+  tr2.Unload();
 }
