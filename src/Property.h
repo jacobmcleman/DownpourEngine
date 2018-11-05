@@ -11,8 +11,8 @@ namespace Downpour
     public:
       Property(OwnerClass* aOwner) : owner_(*aOwner) {}
 
-      operator T() const { return owner_.AccessorFunc(); }
-      Property& operator=(const T& value) { owner_.MutatorFunc(value); return *this; }
+      operator T() const { return (owner_.*AccessorFunc)(); }
+      Property& operator=(const T& value) { (owner_.*MutatorFunc)(value); return *this; }
 
     private:
       OwnerClass& owner_;
@@ -27,7 +27,7 @@ namespace Downpour
     public:
       ReadOnlyProperty(OwnerClass* aOwner) : owner_(*aOwner) {}
 
-      operator T() const { return owner_.AccessorFunc(); }
+      operator T() const { return (owner_.*AccessorFunc)(); }
 
     private:
       OwnerClass& owner_;
