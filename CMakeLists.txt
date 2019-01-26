@@ -27,7 +27,7 @@ include_directories("${CMAKE_SOURCE_DIR}/Dependencies/googletest/googletest/incl
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/Dependencies/googletest EXCLUDE_FROM_ALL)
 
-add_library(googletest STATIC IMPORTED)
+# add_library(googletest STATIC IMPORTED)
 
 add_executable(ResourceTestExe
   src/tests/ResourceTestMain.cpp

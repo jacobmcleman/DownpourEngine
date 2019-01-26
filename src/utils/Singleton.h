@@ -1,4 +1,5 @@
-
+#ifndef _SINGLETON_H
+#define _SINGLETON_H
 
 namespace Downpour
 {
@@ -41,3 +42,4 @@ namespace Downpour
       static bool hasCreated;
   };
 }
+#endif
