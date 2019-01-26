@@ -16,10 +16,10 @@ namespace Deference
   };
 }
 
-#define DEFER(code) \
-  struct Deferrer##COUNTER_READ(Deference::Deferrer) \
+#define DEFER(statement) \
+  struct Deferrer \
   {\
-    code \
+    statement ; \
   }
 
 #endif
