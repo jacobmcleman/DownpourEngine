@@ -28,10 +28,10 @@ class TestResource1 : public Resource<std::string>
     }
 };
 
-class TestResource2 : public Resource<id_t>
+class TestResource2 : public Resource<int>
 {
   public:
-    TestResource2(id_t id) : Resource<id_t>(id) {}
+    TestResource2(int id) : Resource<int>(id) {}
 
   protected:
     bool AquireInternal() override
