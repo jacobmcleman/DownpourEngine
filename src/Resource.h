@@ -5,11 +5,13 @@
 #include <vector>
 
 #include "BaseTypes.h"
-#include "Property.h"
+#include "ResourceHandle.h"
+#include "utils/Property.h"
 
 namespace Downpour
 {
   using namespace Types;
+
   template<typename Identifier>
   class Resource
   {
@@ -56,16 +58,19 @@ namespace Downpour
      void SetReleaseUnused(const bool& shouldRelease) { releaseOnUnused_ = shouldRelease; }
 
     public:
+      using ID_Type = Identifier;
+
       /*
         Base constructor for all resource types
       */
       Resource(const Identifier& aID, bool releaseOnUnused = true) :
         Ready(this), AquireFailed(this),
         ID(this),
-        identifier_(aID),
+        ReleaseOnUnused(this),
         hasAttemptedAquire_(false),
         ready_(false),
         releaseOnUnused_(releaseOnUnused),
+        identifier_(aID),
         users_(0)
       {
       }
@@ -86,9 +91,11 @@ namespace Downpour
       ReadOnlyProperty<bool, Resource, &Resource::HasAquireFailed> AquireFailed;
       ReadOnlyProperty<Identifier, Resource, &Resource::GetIdentifier> ID; 
 
-      Property<bool, Resource, &Resource::GetReleaseUnused, &Resource::SetReleaseUnused> ReleaseUnused;
+      Property<bool, Resource, &Resource::GetReleaseUnused, &Resource::SetReleaseUnused> ReleaseOnUnused;
 
-      friend class ResourceHandle<Resource<Identifier>>;
+      //TODO(jacobmcleman): Figure out how to persuade Resources to only be friends with the correct corresponding type of ResourceHandle (as opposed to all of them)
+      template<typename T>
+      friend class ResourceHandle;
 
     protected:
       void OnHandleAquired() { ++users_; }
