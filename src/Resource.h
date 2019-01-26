@@ -5,13 +5,15 @@
 #include <vector>
 
 #include "BaseTypes.h"
-#include "Property.h"
+#include "ResourceHandle.h"
+#include "utils/Property.h"
 
 namespace Downpour
 {
   using namespace Types;
+
   template<typename Identifier>
-  class Resource
+  class Resource : public Aquirable
   {
     protected:
       /*
@@ -48,18 +50,32 @@ namespace Downpour
         return hasAttemptedAquire_ && !ready_;
       }
 
+      /*
+        Get/Set if this resource should be unloaded
+        upon the final handle to it being released
+      */
+     bool GetReleaseUnused() const { return releaseOnUnused_; }
+     void SetReleaseUnused(const bool& shouldRelease) { releaseOnUnused_ = shouldRelease; }
+
     public:
+      using ID_Type = Identifier;
+
       /*
         Base constructor for all resource types
       */
-      Resource(const Identifier& aID) :
+      Resource(const Identifier& aID, bool releaseOnUnused = true) :
         Ready(this), AquireFailed(this),
         ID(this),
-        identifier_(aID),
+        ReleaseOnUnused(this),
         hasAttemptedAquire_(false),
-        ready_(false)
+        ready_(false),
+        releaseOnUnused_(releaseOnUnused),
+        identifier_(aID),
+        users_(0)
       {
       }
+
+      virtual ~Resource() {}
 
       void Aquire()
       {
@@ -77,10 +93,28 @@ namespace Downpour
       ReadOnlyProperty<bool, Resource, &Resource::HasAquireFailed> AquireFailed;
       ReadOnlyProperty<Identifier, Resource, &Resource::GetIdentifier> ID; 
 
+      Property<bool, Resource, &Resource::GetReleaseUnused, &Resource::SetReleaseUnused> ReleaseOnUnused;
+
+    protected:
+      void OnHandleAquired() { ++users_; }
+      void OnHandleReleased() 
+      { 
+        --users_;
+
+        if(releaseOnUnused_ && users_ == 0)
+        {
+          Release();
+        }
+      }
+
     private:
       std::atomic_bool hasAttemptedAquire_;
       std::atomic_bool ready_;
+      std::atomic_bool releaseOnUnused_;
+
       const Identifier identifier_;
+
+      std::atomic_uint users_;
   };
 }
 #endif

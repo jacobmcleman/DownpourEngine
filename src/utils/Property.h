@@ -1,3 +1,5 @@
+#ifndef _PROPERTIES_H
+#define _PROPERTIES_H
 
 namespace Downpour
 {
@@ -35,3 +37,4 @@ namespace Downpour
       OwnerClass& owner_;
   };
 }
+#endif
