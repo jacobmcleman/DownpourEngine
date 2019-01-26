@@ -21,4 +21,4 @@ matrix:
     - os: linux
       env: UNIT_TESTS=true LLVM_VERSION=3.9.0 BOOST_VERSION=default ENABLE_MEMCHECK=true
       compiler: clang
-      script: cmake -H. -Bbuild && cmake --build build
+      script: cmake -H. -Bbuild && cmake --build build && ./ResourceTestExe.exe
