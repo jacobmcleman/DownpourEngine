@@ -23,7 +23,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # The following folder will be included
 include_directories("${PROJECT_SOURCE_DIR}")
 include_directories ("${CMAKE_SOURCE_DIR}/Dependencies/JobBot/source")
+include_directories("${CMAKE_SOURCE_DIR}/Dependencies/googletest/googletest/include")
+
+add_subdirectory(${CMAKE_SOURCE_DIR}/Dependencies/googletest EXCLUDE_FROM_ALL)
+
+add_library(googletest STATIC IMPORTED)
 
 add_executable(ResourceTestExe
-  src/ResourceTestMain.cpp
+  src/tests/ResourceTestMain.cpp
 )
+
+target_link_libraries(ResourceTestExe gtest_main)
