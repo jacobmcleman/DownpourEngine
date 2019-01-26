@@ -1,5 +1,5 @@
-#include "Resource.h"
-#include "BaseTypes.h"
+#include "../Resource.h"
+#include "../BaseTypes.h"
 #include "gtest/gtest.h"
 
 #include <string>

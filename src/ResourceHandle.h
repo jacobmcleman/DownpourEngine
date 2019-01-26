@@ -5,6 +5,18 @@
 
 namespace Downpour
 {
+
+class Aquirable
+{
+  public:
+    template<typename T>
+    friend class ResourceHandle;
+
+  protected:
+    virtual void OnHandleAquired() = 0;
+    virtual void OnHandleReleased() = 0;
+};
+
 template<typename ResourceType>
 class ResourceHandle
 {
@@ -43,8 +55,8 @@ public:
 private:
   ResourceType* pointer_;
 
-  void AquireHandle() { static_cast<Resource<typename ResourceType::ID_Type>*>(pointer_)->OnHandleAquired(); }
-  void ReleaseHandle() { static_cast<Resource<typename ResourceType::ID_Type>*>(pointer_)->OnHandleReleased(); }
+  void AquireHandle() { static_cast<Aquirable*>(pointer_)->OnHandleAquired(); }
+  void ReleaseHandle() { static_cast<Aquirable*>(pointer_)->OnHandleReleased(); }
 };
 }
 

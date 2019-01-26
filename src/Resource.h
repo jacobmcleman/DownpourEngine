@@ -13,7 +13,7 @@ namespace Downpour
   using namespace Types;
 
   template<typename Identifier>
-  class Resource
+  class Resource : public Aquirable
   {
     protected:
       /*
@@ -75,6 +75,8 @@ namespace Downpour
       {
       }
 
+      virtual ~Resource() {}
+
       void Aquire()
       {
         hasAttemptedAquire_ = true;
@@ -92,10 +94,6 @@ namespace Downpour
       ReadOnlyProperty<Identifier, Resource, &Resource::GetIdentifier> ID; 
 
       Property<bool, Resource, &Resource::GetReleaseUnused, &Resource::SetReleaseUnused> ReleaseOnUnused;
-
-      //TODO(jacobmcleman): Figure out how to persuade Resources to only be friends with the correct corresponding type of ResourceHandle (as opposed to all of them)
-      template<typename T>
-      friend class ResourceHandle;
 
     protected:
       void OnHandleAquired() { ++users_; }
