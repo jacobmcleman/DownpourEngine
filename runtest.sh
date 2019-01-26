@@ -1,1 +1,1 @@
-../bin/ResourceTestExe.exe
+../bin/ResourceTestExe
