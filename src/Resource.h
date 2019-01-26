@@ -48,16 +48,25 @@ namespace Downpour
         return hasAttemptedAquire_ && !ready_;
       }
 
+      /*
+        Get/Set if this resource should be unloaded
+        upon the final handle to it being released
+      */
+     bool GetReleaseUnused() const { return releaseOnUnused_; }
+     void SetReleaseUnused(const bool& shouldRelease) { releaseOnUnused_ = shouldRelease; }
+
     public:
       /*
         Base constructor for all resource types
       */
-      Resource(const Identifier& aID) :
+      Resource(const Identifier& aID, bool releaseOnUnused = true) :
         Ready(this), AquireFailed(this),
         ID(this),
         identifier_(aID),
         hasAttemptedAquire_(false),
-        ready_(false)
+        ready_(false),
+        releaseOnUnused_(releaseOnUnused),
+        users_(0)
       {
       }
 
@@ -77,10 +86,30 @@ namespace Downpour
       ReadOnlyProperty<bool, Resource, &Resource::HasAquireFailed> AquireFailed;
       ReadOnlyProperty<Identifier, Resource, &Resource::GetIdentifier> ID; 
 
+      Property<bool, Resource, &Resource::GetReleaseUnused, &Resource::SetReleaseUnused> ReleaseUnused;
+
+      friend class ResourceHandle<Resource<Identifier>>;
+
+    protected:
+      void OnHandleAquired() { ++users_; }
+      void OnHandleReleased() 
+      { 
+        --users_;
+
+        if(releaseOnUnused_ && users_ == 0)
+        {
+          Release();
+        }
+      }
+
     private:
       std::atomic_bool hasAttemptedAquire_;
       std::atomic_bool ready_;
+      std::atomic_bool releaseOnUnused_;
+
       const Identifier identifier_;
+
+      std::atomic_uint users_;
   };
 }
 #endif
