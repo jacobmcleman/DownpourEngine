@@ -9,10 +9,10 @@
 using namespace Downpour;
 using namespace Downpour::Types;
 
-class TestResource : public Resource<std::string>
+class TestResource1 : public Resource<std::string>
 {
   public:
-    TestResource(const std::string& id) : Resource<std::string>(id) {}
+    TestResource1(const std::string& id) : Resource<std::string>(id) {}
 
   protected:
     bool AquireInternal() override
@@ -28,9 +28,40 @@ class TestResource : public Resource<std::string>
     }
 };
 
+class TestResource2 : public Resource<id_t>
+{
+  public:
+    TestResource2(id_t id) : Resource<id_t>(id) {}
+
+  protected:
+    bool AquireInternal() override
+    {
+      std::cout << "Loaded: " << *ID << std::endl;
+      return true;
+    }
+
+    bool ReleaseInternal() override
+    {
+      std::cout << "Unloaded: " << *ID << std::endl;
+      return true;
+    }
+};
+
+TEST(BasicResource, TestResource_StringID)
+{
+  TestResource1 tr("test1");
+  EXPECT_EQ(*tr.ID, "test1");
+}
+
+TEST(BasicResource, TestResource_ID)
+{
+  TestResource2 tr(123);
+  EXPECT_EQ(*tr.ID, 123);
+}
+
 TEST(BasicResource, TestResource_Aquire)
 {
-  TestResource tr("test1");
+  TestResource1 tr("test1");
 
   EXPECT_FALSE(*tr.Ready);
   EXPECT_EQ(*tr.ID, "test1");
@@ -43,7 +74,7 @@ TEST(BasicResource, TestResource_Aquire)
 
 TEST(BasicResource, TestResource_AquireRelease)
 {
-  TestResource tr("test1");
+  TestResource1 tr("test1");
 
   EXPECT_FALSE(*tr.Ready);
   EXPECT_EQ(*tr.ID, "test1");
@@ -61,7 +92,7 @@ TEST(BasicResource, TestResource_AquireRelease)
 
 TEST(BasicResource, TestResource_Release)
 {
-  TestResource tr("test1");
+  TestResource1 tr("test1");
 
   EXPECT_FALSE(*tr.Ready);
   EXPECT_EQ(*tr.ID, "test1");
