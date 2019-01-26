@@ -49,7 +49,6 @@ namespace Downpour
       }
 
     public:
-
       /*
         Base constructor for all resource types
       */
