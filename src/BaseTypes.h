@@ -9,7 +9,6 @@ namespace Downpour
   {
     using byte = uint8_t;
     using index_t = int32_t;
-    using id_t = uint64_t;
   }
 }
 
