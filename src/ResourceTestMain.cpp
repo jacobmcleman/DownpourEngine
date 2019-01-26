@@ -14,22 +14,15 @@ class TestResource : public Resource<std::string>
     TestResource(const std::string& id) : Resource<std::string>(id) {}
 
   protected:
-    bool LoadInternal(std::vector<byte>&& aBytes) override
+    bool AquireInternal() override
     {
-      if(aBytes.empty()) return false;
-
-      std::cout << GetIdentifier() << ": ";
-      for(byte b : aBytes)
-      {
-        std::cout << static_cast<char>(b);
-      }
-      std::cout << std::endl;
+      std::cout << "Loaded: " << *ID << std::endl;
       return true;
     }
 
-    bool UnloadInternal() override
+    bool ReleaseInternal() override
     {
-      std::cout << "Unloaded" << std::endl;
+      std::cout << "Unloaded: " << *ID << std::endl;
       return true;
     }
 };
@@ -39,11 +32,8 @@ int main(int argc, char** argv)
   TestResource tr1("test1");
   TestResource tr2("test2");
 
-  std::string toReq = "butts lol";
-  std::vector<byte> bytes(toReq.begin(), toReq.end());
-  tr1.Load(std::move(bytes));
-  tr1.Unload();
+  tr1.Aquire();
+  tr1.Release();
 
-  tr2.Load(std::vector<byte>());
-  tr2.Unload();
+  return 0;
 }

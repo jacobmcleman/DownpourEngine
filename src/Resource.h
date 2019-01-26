@@ -19,9 +19,10 @@ namespace Downpour
 
         Return true if requested operation succeeded, false otherwise
       */
-      virtual bool LoadInternal(std::vector<byte>&& aBytes) = 0;
-      virtual bool UnloadInternal() = 0;
+      virtual bool AquireInternal() = 0;
+      virtual bool ReleaseInternal() = 0;
 
+    private:
       /*
         Get the identifier that was used to request this resource
       */
@@ -33,48 +34,53 @@ namespace Downpour
       /*
         Get if a successful load operation happened
       */      
-      bool GetIsLoaded() const
+      bool GetIsReady() const
       {
-        return hasLoaded_;
+        return ready_;
       }
 
       /*
         Get if the most recent load operation failed
         Will be false until it has actually tried to load for the first time
       */
-      bool HasLoadFailed() const
+      bool HasAquireFailed() const
       {
-        return loadFailed_;
+        return hasAttemptedAquire_ && !ready_;
       }
 
     public:
+
+      /*
+        Base constructor for all resource types
+      */
       Resource(const Identifier& aID) :
-        IsLoaded(this), LoadFailed(this),
+        Ready(this), AquireFailed(this),
         ID(this),
-        identifier_(aID)
+        identifier_(aID),
+        hasAttemptedAquire_(false),
+        ready_(false)
       {
-        hasLoaded_ = false;
-        loadFailed_ = false;
       }
 
-      void Load(std::vector<byte>&& aBytes)
+      void Aquire()
       {
-        hasLoaded_ = this->LoadInternal(std::move(aBytes));
-        loadFailed_ = !hasLoaded_;
+        hasAttemptedAquire_ = true;
+        ready_ = this->AquireInternal();
       }
 
-      void Unload()
+      void Release()
       {
-        hasLoaded_ = !(this->UnloadInternal());
+        ready_ = !(this->ReleaseInternal());
+        hasAttemptedAquire_= ready_.load();
       }
 
-      ReadOnlyProperty<bool, Resource, &Resource::GetIsLoaded> IsLoaded;
-      ReadOnlyProperty<bool, Resource, &Resource::HasLoadFailed> LoadFailed;
+      ReadOnlyProperty<bool, Resource, &Resource::GetIsReady> Ready;
+      ReadOnlyProperty<bool, Resource, &Resource::HasAquireFailed> AquireFailed;
       ReadOnlyProperty<Identifier, Resource, &Resource::GetIdentifier> ID; 
 
     private:
-      std::atomic_bool hasLoaded_;
-      std::atomic_bool loadFailed_;
+      std::atomic_bool hasAttemptedAquire_;
+      std::atomic_bool ready_;
       const Identifier identifier_;
   };
 }
