@@ -30,15 +30,18 @@ namespace Downpour
         if(hasCreated)
         {
           SingletonException<T> e;
-          e.existingInstance = &instance;
+          e.existingInstance = &GetInstance();
           throw e;
         }
       }
 
-      static T& GetInstance() { return instance; }
+      static T& GetInstance() 
+      { 
+        static T instance;
+        return instance; 
+      }
 
     private:
-      static Singleton instance;
       static bool hasCreated;
   };
 }
