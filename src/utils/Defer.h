@@ -2,9 +2,9 @@
 #define _DEFER_H
 
 #define DEFER(statement) \
-  struct Deferrer \
-  {\
+  struct        \
+  {             \
     statement ; \
-  }
+  } deferred
 
 #endif
