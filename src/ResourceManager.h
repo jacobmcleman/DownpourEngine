@@ -15,7 +15,6 @@ namespace Downpour
     public:
       ResourceManager()
       {
-
       }
 
       ~ResourceManager()

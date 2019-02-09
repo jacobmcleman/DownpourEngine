@@ -27,7 +27,6 @@ namespace Downpour
     public:
       Singleton()
       {
-        
       }
 
       static T& GetInstance() 
