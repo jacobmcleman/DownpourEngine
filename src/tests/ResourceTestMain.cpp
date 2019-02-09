@@ -151,6 +151,26 @@ TEST(ResourceManager, Manager_RequestResourceSameIDSameResource)
   EXPECT_TRUE(tr1p1 == tr1p2);
 }
 
+TEST(ResourceManager, Manager_RequestedResourceReleased)
+{
+  TestResource1* trp = RequestResource<TestResource1>("test1");
+
+  bool ready = trp->Ready;
+  EXPECT_FALSE(ready);
+
+  ResourceHandle<TestResource1> trh = RequestResource<TestResource1>("test1");
+}
+
+TEST(ResourceManager, Manager_RequestReleasedResourceReacquire)
+{
+  TestResource1* trp = RequestResource<TestResource1>("test1");
+
+  ResourceHandle<TestResource1> trh = RequestResource<TestResource1>("test1");
+
+  bool ready = trp->Ready;
+  EXPECT_TRUE(ready);
+}
+
 int main(int argc, char**argv)
 {
   ::testing::InitGoogleTest(&argc, argv);
