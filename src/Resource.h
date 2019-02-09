@@ -21,7 +21,7 @@ namespace Downpour
 
         Return true if requested operation succeeded, false otherwise
       */
-      virtual bool AquireInternal() = 0;
+      virtual bool AcquireInternal() = 0;
       virtual bool ReleaseInternal() = 0;
 
     private:
@@ -45,9 +45,9 @@ namespace Downpour
         Get if the most recent load operation failed
         Will be false until it has actually tried to load for the first time
       */
-      bool HasAquireFailed() const
+      bool HasAcquireFailed() const
       {
-        return hasAttemptedAquire_ && !ready_;
+        return hasAttemptedAcquire_ && !ready_;
       }
 
       /*
@@ -64,10 +64,10 @@ namespace Downpour
         Base constructor for all resource types
       */
       Resource(const Identifier& aID, bool releaseOnUnused = true) :
-        Ready(this), AquireFailed(this),
+        Ready(this), AcquireFailed(this),
         ID(this),
         ReleaseOnUnused(this),
-        hasAttemptedAquire_(false),
+        hasAttemptedAcquire_(false),
         ready_(false),
         releaseOnUnused_(releaseOnUnused),
         identifier_(aID),
@@ -77,26 +77,32 @@ namespace Downpour
 
       virtual ~Resource() {}
 
-      void Aquire()
+      void Acquire()
       {
-        hasAttemptedAquire_ = true;
-        ready_ = this->AquireInternal();
+        if(!ready_)
+        {
+          hasAttemptedAcquire_ = true;
+          ready_ = this->AcquireInternal();
+        }
       }
 
       void Release()
       {
-        ready_ = !(this->ReleaseInternal());
-        hasAttemptedAquire_= ready_.load();
+        if(ready_)
+        {
+          ready_ = !(this->ReleaseInternal());
+          hasAttemptedAcquire_= ready_.load();
+        }
       }
 
       ReadOnlyProperty<bool, Resource, &Resource::GetIsReady> Ready;
-      ReadOnlyProperty<bool, Resource, &Resource::HasAquireFailed> AquireFailed;
+      ReadOnlyProperty<bool, Resource, &Resource::HasAcquireFailed> AcquireFailed;
       ReadOnlyProperty<Identifier, Resource, &Resource::GetIdentifier> ID; 
 
       Property<bool, Resource, &Resource::GetReleaseUnused, &Resource::SetReleaseUnused> ReleaseOnUnused;
 
     protected:
-      void OnHandleAquired() { ++users_; }
+      void OnHandleAcquired() { ++users_; }
       void OnHandleReleased() 
       { 
         --users_;
@@ -108,7 +114,7 @@ namespace Downpour
       }
 
     private:
-      std::atomic_bool hasAttemptedAquire_;
+      std::atomic_bool hasAttemptedAcquire_;
       std::atomic_bool ready_;
       std::atomic_bool releaseOnUnused_;
 

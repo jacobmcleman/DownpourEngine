@@ -27,12 +27,7 @@ namespace Downpour
     public:
       Singleton()
       {
-        if(hasCreated)
-        {
-          SingletonException<T> e;
-          e.existingInstance = &GetInstance();
-          throw e;
-        }
+        
       }
 
       static T& GetInstance() 
@@ -40,9 +35,6 @@ namespace Downpour
         static T instance;
         return instance; 
       }
-
-    private:
-      static bool hasCreated;
   };
 }
 #endif

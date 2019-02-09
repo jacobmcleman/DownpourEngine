@@ -13,17 +13,56 @@ namespace Downpour
   class ResourceManager : public Singleton<ResourceManager<Identifier_t>>
   {
     public:
-      ResourceManager();
-      ~ResourceManager();
+      ResourceManager()
+      {
+
+      }
+
+      ~ResourceManager()
+      {
+        for(auto&& respair : resources)
+        {
+          respair.second->Release();
+          delete respair.second;
+        }
+      }
 
       template<typename Resource_t>
       ResourceHandle<Resource_t> Request(const Identifier_t& identifier)
       {
-        return ResourceHandle<Resource_t>(resources[identifier]);
+        Resource_t* res;
+        if(resources.count(identifier) > 0)
+        {
+          res = static_cast<Resource_t*>(resources[identifier]);
+        }
+        else
+        {
+          res = new Resource_t(identifier);
+          resources[identifier] = res;
+        }
+
+        if(!res->Ready)
+        {
+          res->Acquire();
+        }
+        
+        return ResourceHandle<Resource_t>(res);
       }
 
     private:
       std::unordered_map<Identifier_t, Resource<Identifier_t>*> resources;
   };
+
+  template<typename Resource_t, typename Identifier_t>
+  ResourceHandle<Resource_t> RequestResource(const Identifier_t& identifier)
+  {
+    return ResourceManager<Identifier_t>::GetInstance().Request<Resource_t>(identifier);
+  }
+
+  template<typename Resource_t>
+  ResourceHandle<Resource_t> RequestResource(const char* identifier)
+  {
+    return ResourceManager<std::string>::GetInstance().Request<Resource_t>(identifier);
+  }
 }
 #endif
