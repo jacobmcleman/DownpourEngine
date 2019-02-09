@@ -1,5 +1,6 @@
 #include "../Resource.h"
 #include "../BaseTypes.h"
+#include "../ResourceManager.h"
 #include "gtest/gtest.h"
 
 #include <string>
@@ -15,15 +16,15 @@ class TestResource1 : public Resource<std::string>
     TestResource1(const std::string& id) : Resource<std::string>(id) {}
 
   protected:
-    bool AquireInternal() override
+    bool AcquireInternal() override
     {
-      std::cout << "Loaded: " << *ID << std::endl;
+      //std::cout << "Loaded: " << *ID << std::endl;
       return true;
     }
 
     bool ReleaseInternal() override
     {
-      std::cout << "Unloaded: " << *ID << std::endl;
+      //std::cout << "Unloaded: " << *ID << std::endl;
       return true;
     }
 };
@@ -34,15 +35,15 @@ class TestResource2 : public Resource<int>
     TestResource2(int id) : Resource<int>(id) {}
 
   protected:
-    bool AquireInternal() override
+    bool AcquireInternal() override
     {
-      std::cout << "Loaded: " << *ID << std::endl;
+      //std::cout << "Loaded: " << *ID << std::endl;
       return true;
     }
 
     bool ReleaseInternal() override
     {
-      std::cout << "Unloaded: " << *ID << std::endl;
+      //std::cout << "Unloaded: " << *ID << std::endl;
       return true;
     }
 };
@@ -59,21 +60,21 @@ TEST(BasicResource, TestResource_ID)
   EXPECT_EQ(*tr.ID, 123);
 }
 
-TEST(BasicResource, TestResource_Aquire)
+TEST(BasicResource, TestResource_Acquire)
 {
   TestResource1 tr("test1");
 
   EXPECT_FALSE(*tr.Ready);
-  tr.Aquire();
+  tr.Acquire();
   EXPECT_TRUE(*tr.Ready);
 }
 
-TEST(BasicResource, TestResource_AquireRelease)
+TEST(BasicResource, TestResource_AcquireRelease)
 {
   TestResource1 tr("test1");
 
   EXPECT_FALSE(*tr.Ready);
-  tr.Aquire();
+  tr.Acquire();
   EXPECT_TRUE(*tr.Ready);
   tr.Release();
   EXPECT_FALSE(*tr.Ready);
@@ -108,7 +109,7 @@ TEST(ResourceHandles, Handle_Reassign)
 TEST(ResourceHandles, Handle_DestroyLastReleases)
 {
   TestResource2 tr(27);
-  tr.Aquire();
+  tr.Acquire();
 
   {
     ResourceHandle<TestResource2> tr_h(&tr);
@@ -121,7 +122,7 @@ TEST(ResourceHandles, Handle_DestroyLastReleases)
 TEST(ResourceHandles, Handle_DestroyDoesntRelease)
 {
   TestResource2 tr(27);
-  tr.Aquire();
+  tr.Acquire();
 
   ResourceHandle<TestResource2> tr_h1(&tr);
   EXPECT_TRUE(*tr_h1->Ready);
@@ -132,6 +133,42 @@ TEST(ResourceHandles, Handle_DestroyDoesntRelease)
   }
 
   EXPECT_TRUE(*tr_h1->Ready);
+}
+
+TEST(ResourceManager, Manager_RequestResourceHasAcquired)
+{
+  ResourceHandle<TestResource1> tr1h = RequestResource<TestResource1>("test1");
+  EXPECT_TRUE(*tr1h->Ready);
+}
+
+TEST(ResourceManager, Manager_RequestResourceSameIDSameResource)
+{
+  ResourceHandle<TestResource1> tr1h1 = RequestResource<TestResource1>("test1");
+  TestResource1* tr1p1 = tr1h1;
+  ResourceHandle<TestResource1> tr1h2 = RequestResource<TestResource1>("test1");
+  TestResource1* tr1p2 = tr1h2;
+
+  EXPECT_TRUE(tr1p1 == tr1p2);
+}
+
+TEST(ResourceManager, Manager_RequestedResourceReleased)
+{
+  TestResource1* trp = RequestResource<TestResource1>("test1");
+
+  bool ready = trp->Ready;
+  EXPECT_FALSE(ready);
+
+  ResourceHandle<TestResource1> trh = RequestResource<TestResource1>("test1");
+}
+
+TEST(ResourceManager, Manager_RequestReleasedResourceReacquire)
+{
+  TestResource1* trp = RequestResource<TestResource1>("test1");
+
+  ResourceHandle<TestResource1> trh = RequestResource<TestResource1>("test1");
+
+  bool ready = trp->Ready;
+  EXPECT_TRUE(ready);
 }
 
 int main(int argc, char**argv)

@@ -13,7 +13,7 @@ class Aquirable
     friend class ResourceHandle;
 
   protected:
-    virtual void OnHandleAquired() = 0;
+    virtual void OnHandleAcquired() = 0;
     virtual void OnHandleReleased() = 0;
 };
 
@@ -23,7 +23,7 @@ class ResourceHandle
 public:
   explicit ResourceHandle(ResourceType* handleTo) : pointer_(handleTo)
   {
-    if(pointer_ != nullptr) AquireHandle();
+    if(pointer_ != nullptr) AcquireHandle();
   }
 
   ~ResourceHandle()
@@ -35,7 +35,7 @@ public:
   {
     if(pointer_ != nullptr) ReleaseHandle();
     pointer_ = rhs;
-    if(pointer_ != nullptr) AquireHandle();
+    if(pointer_ != nullptr) AcquireHandle();
 
     return *this;
   }
@@ -55,7 +55,7 @@ public:
 private:
   ResourceType* pointer_;
 
-  void AquireHandle() { static_cast<Aquirable*>(pointer_)->OnHandleAquired(); }
+  void AcquireHandle() { static_cast<Aquirable*>(pointer_)->OnHandleAcquired(); }
   void ReleaseHandle() { static_cast<Aquirable*>(pointer_)->OnHandleReleased(); }
 };
 }
