@@ -55,13 +55,13 @@ namespace Downpour
   template<typename Resource_t, typename Identifier_t>
   ResourceHandle<Resource_t> RequestResource(const Identifier_t& identifier)
   {
-    return ResourceManager<Identifier_t>::GetInstance().Request<Resource_t>(identifier);
+    return ResourceManager<Identifier_t>::GetInstance().template Request<Resource_t>(identifier);
   }
 
   template<typename Resource_t>
   ResourceHandle<Resource_t> RequestResource(const char* identifier)
   {
-    return ResourceManager<std::string>::GetInstance().Request<Resource_t>(identifier);
+    return ResourceManager<std::string>::GetInstance().template Request<Resource_t>(identifier);
   }
 }
 #endif
