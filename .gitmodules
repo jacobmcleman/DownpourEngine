@@ -7,3 +7,6 @@
 [submodule "Dependencies/gtest-parallel"]
 	path = Dependencies/gtest-parallel
 	url = https://github.com/google/gtest-parallel
+[submodule "Dependencies/MetaStuff"]
+	path = Dependencies/MetaStuff
+	url = https://github.com/eliasdaler/MetaStuff
